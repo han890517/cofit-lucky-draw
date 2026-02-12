@@ -1,0 +1,124 @@
+
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<title>Cofit 直播抽獎系統</title>
+<style>
+body{
+    font-family: "Microsoft JhengHei", sans-serif;
+    background: linear-gradient(135deg,#004f51,#0a9396);
+    color:white;
+    text-align:center;
+    padding:30px;
+}
+textarea{
+    width:90%;
+    height:200px;
+    margin:20px 0;
+    border-radius:10px;
+    padding:10px;
+}
+button, select, input{
+    padding:10px;
+    margin:5px;
+    border-radius:8px;
+    border:none;
+}
+#winner{
+    font-size:36px;
+    margin-top:30px;
+    font-weight:bold;
+}
+.small{
+    font-size:14px;
+    opacity:0.8;
+}
+</style>
+</head>
+<body>
+
+<h1>🎉 Cofit 直播抽獎系統 🎉</h1>
+
+<div class="small">請貼上 Google Meet 聊天紀錄（名字 / 時間 / 留言 格式）</div>
+
+<textarea id="chatInput" placeholder="在這裡貼上聊天內容..."></textarea><br>
+
+<button onclick="parseNames()">解析名單</button>
+
+<div id="countArea"></div>
+
+<br>
+
+<label>抽出幾位：</label>
+<select id="winnerCount">
+  <option value="1">1 位</option>
+  <option value="2">2 位</option>
+  <option value="3">3 位</option>
+  <option value="5">5 位</option>
+</select>
+
+<br>
+
+<label>獎品名稱：</label>
+<input type="text" id="prizeName" placeholder="請輸入獎品名稱">
+
+<br>
+
+<button onclick="drawLottery()">開始抽獎</button>
+
+<div id="winner"></div>
+
+<script>
+let uniqueNames = [];
+
+function parseNames(){
+    const text = document.getElementById("chatInput").value.trim();
+    const lines = text.split("\n").filter(l => l.trim() !== "");
+    uniqueNames = [];
+
+    for(let i=0; i < lines.length; i++){
+        if(i % 3 === 0){
+            const name = lines[i].trim();
+            if(!uniqueNames.includes(name)){
+                uniqueNames.push(name);
+            }
+        }
+    }
+
+    document.getElementById("countArea").innerHTML =
+        "目前有效抽獎人數：" + uniqueNames.length + " 人";
+}
+
+function drawLottery(){
+    if(uniqueNames.length === 0){
+        alert("請先解析名單！");
+        return;
+    }
+
+    const count = parseInt(document.getElementById("winnerCount").value);
+    const prize = document.getElementById("prizeName").value || "神秘好禮";
+
+    if(count > uniqueNames.length){
+        alert("抽獎人數超過參加人數！");
+        return;
+    }
+
+    let pool = [...uniqueNames];
+    let winners = [];
+
+    for(let i=0; i<count; i++){
+        const randomIndex = Math.floor(Math.random()*pool.length);
+        winners.push(pool[randomIndex]);
+        pool.splice(randomIndex,1);
+    }
+
+    document.getElementById("winner").innerHTML =
+        "🏆 恭喜得獎者 🏆<br>" +
+        winners.join("<br>") +
+        "<br><br>獎品：" + prize;
+}
+</script>
+
+</body>
+</html>
