@@ -1,178 +1,766 @@
-<!DOCTYPE html>
-<html lang="zh-TW">
+<!doctype html>
+<html lang="zh-Hant">
 <head>
-<meta charset="UTF-8">
-<title>Cofit 直播抽獎</title>
-<style>
-body{
-    margin:0;
-    font-family:"Microsoft JhengHei",sans-serif;
-    text-align:center;
-    background:linear-gradient(135deg,#3f8f85,#5aa398);
-    color:white;
-}
-
-h1{
-    margin-top:40px;
-    font-size:42px;
-}
-
-textarea{
-    width:80%;
-    height:220px;
-    margin:20px auto;
-    border-radius:15px;
-    border:none;
-    padding:20px;
-    font-size:18px;
-    display:block;
-    resize:none;
-    color:#333;
-}
-
-.controls{
-    margin:20px;
-    font-size:18px;
-}
-
-input,select{
-    padding:8px 12px;
-    border-radius:8px;
-    border:none;
-    font-size:16px;
-    margin-left:5px;
-}
-
-button{
-    padding:12px 30px;
-    border-radius:25px;
-    border:none;
-    background:white;
-    color:#3f8f85;
-    font-size:20px;
-    cursor:pointer;
-    margin-top:15px;
-}
-
-.result{
-    margin-top:50px;
-    font-size:40px;
-    font-weight:bold;
-    min-height:150px;
-}
-
-.winner{
-    margin:10px 0;
-    font-size:36px;
-}
-
-.confetti{
-    position:fixed;
-    width:10px;
-    height:10px;
-    top:-10px;
-    animation:fall 3s linear forwards;
-}
-
-@keyframes fall{
-    to{
-        transform:translateY(100vh) rotate(720deg);
-        opacity:0;
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Cofit 直播抽獎</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:#121824;
+      --panel2:#0f1520;
+      --text:#e9eef7;
+      --muted:#aab6c8;
+      --brand:#1fb8ad;
+      --brand2:#2dd4bf;
+      --danger:#ff5c7a;
+      --ok:#8bffb0;
+      --shadow: 0 12px 36px rgba(0,0,0,.45);
+      --radius:20px;
     }
-}
-</style>
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      color:var(--text);
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(45,212,191,.22), transparent 60%),
+        radial-gradient(900px 500px at 110% 10%, rgba(31,184,173,.16), transparent 55%),
+        radial-gradient(900px 500px at 40% 120%, rgba(255,92,122,.08), transparent 55%),
+        linear-gradient(180deg, #070a10, #0b0f14 60%, #070a10);
+      min-height:100vh;
+      padding:24px;
+    }
+    .wrap{
+      max-width:1100px;
+      margin:0 auto;
+      display:grid;
+      grid-template-columns: 1.1fr .9fr;
+      gap:18px;
+    }
+    @media (max-width: 980px){
+      .wrap{grid-template-columns:1fr}
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,.02));
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .head{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:18px 18px 14px;
+      background: linear-gradient(180deg, rgba(31,184,173,.18), rgba(255,255,255,0));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .logo{
+      width:54px;height:54px;
+      border-radius:14px;
+      background: rgba(255,255,255,.06);
+      display:grid;place-items:center;
+      overflow:hidden;
+      border:1px solid rgba(255,255,255,.10);
+      flex:0 0 auto;
+    }
+    .logo img{width:100%;height:100%;object-fit:contain}
+    h1{
+      margin:0;
+      font-size:20px;
+      letter-spacing:.2px;
+      line-height:1.15;
+    }
+    .sub{
+      margin-top:4px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .body{padding:16px 18px 18px;}
+    label{
+      display:block;
+      color:var(--muted);
+      font-size:13px;
+      margin:12px 0 8px;
+    }
+    textarea{
+      width:100%;
+      min-height:280px;
+      resize:vertical;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(10,14,22,.55);
+      color:var(--text);
+      outline:none;
+      line-height:1.45;
+      font-size:14px;
+    }
+    textarea:focus{
+      border-color: rgba(45,212,191,.45);
+      box-shadow: 0 0 0 4px rgba(45,212,191,.12);
+    }
+    .row{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .field{
+      flex:1 1 220px;
+      min-width:180px;
+    }
+    input[type="text"], select{
+      width:100%;
+      padding:10px 12px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(10,14,22,.55);
+      color:var(--text);
+      outline:none;
+      font-size:14px;
+    }
+    input[type="text"]:focus, select:focus{
+      border-color: rgba(45,212,191,.45);
+      box-shadow: 0 0 0 4px rgba(45,212,191,.12);
+    }
+
+    .btns{display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;}
+    button{
+      appearance:none;
+      border:none;
+      border-radius:14px;
+      padding:11px 14px;
+      font-weight:650;
+      font-size:14px;
+      cursor:pointer;
+      transition: transform .06s ease, filter .12s ease, opacity .12s ease;
+      user-select:none;
+    }
+    button:active{transform: translateY(1px)}
+    .primary{
+      background: linear-gradient(180deg, var(--brand2), var(--brand));
+      color:#07201d;
+      box-shadow: 0 12px 24px rgba(45,212,191,.15);
+    }
+    .ghost{
+      background: rgba(255,255,255,.06);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.10);
+    }
+    .danger{
+      background: rgba(255,92,122,.14);
+      color: #ffd7df;
+      border:1px solid rgba(255,92,122,.25);
+    }
+    .hint{
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.55;
+      margin-top:10px;
+    }
+    .stat{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:14px;
+    }
+    .pill{
+      background: rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:12px 12px;
+    }
+    .pill .k{color:var(--muted); font-size:12px}
+    .pill .v{font-size:18px; font-weight:750; margin-top:6px}
+    .list{
+      margin-top:14px;
+      background: rgba(10,14,22,.45);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:12px;
+      max-height: 420px;
+      overflow:auto;
+    }
+    .chip{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      background: rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.09);
+      margin:6px 6px 0 0;
+      font-size:13px;
+    }
+    .chip i{
+      width:8px;height:8px;border-radius:50%;
+      background: var(--brand2);
+      box-shadow:0 0 0 3px rgba(45,212,191,.12);
+      display:inline-block;
+    }
+
+    /* Modal */
+    .overlay{
+      position:fixed;
+      inset:0;
+      background: rgba(0,0,0,.62);
+      display:none;
+      align-items:center;
+      justify-content:center;
+      padding:22px;
+      z-index:50;
+    }
+    .modal{
+      width:min(720px, 96vw);
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid rgba(255,255,255,.10);
+      border-radius: 26px;
+      box-shadow: 0 22px 60px rgba(0,0,0,.55);
+      overflow:hidden;
+      position:relative;
+    }
+    .modalHead{
+      padding:16px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      background: linear-gradient(180deg, rgba(45,212,191,.18), rgba(255,255,255,0));
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .modalTitle{
+      font-weight:800;
+      letter-spacing:.2px;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    .modalTitle small{
+      color:var(--muted);
+      font-weight:600;
+      font-size:12px;
+    }
+    .x{
+      background: rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      color:var(--text);
+      width:40px;height:40px;
+      border-radius:14px;
+      display:grid;place-items:center;
+      cursor:pointer;
+      flex:0 0 auto;
+    }
+    .x:active{transform:translateY(1px)}
+    .modalBody{
+      padding:20px 18px 22px;
+      text-align:center;
+    }
+    .winnerBox{
+      margin: 6px auto 0;
+      padding: 20px 14px;
+      border-radius: 22px;
+      background: rgba(10,14,22,.45);
+      border:1px solid rgba(255,255,255,.10);
+      position:relative;
+      overflow:hidden;
+      min-height: 170px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+    }
+    .winnerLabel{
+      color:var(--muted);
+      font-size:13px;
+      font-weight:650;
+      letter-spacing:.3px;
+    }
+    .winnerName{
+      font-size:42px;
+      font-weight:900;
+      letter-spacing:.5px;
+      line-height:1.1;
+      text-shadow: 0 10px 24px rgba(0,0,0,.35);
+      word-break: break-word;
+      padding:0 10px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 12px;
+      border-radius:999px;
+      background: rgba(45,212,191,.12);
+      border:1px solid rgba(45,212,191,.22);
+      color:#ccfff8;
+      font-weight:750;
+      font-size:13px;
+    }
+
+    /* Spinner animation */
+    .spin{
+      display:inline-block;
+      animation: pop .18s ease-out;
+    }
+    @keyframes pop{
+      from{transform:scale(.96); opacity:.2}
+      to{transform:scale(1); opacity:1}
+    }
+
+    /* Confetti canvas */
+    #confettiCanvas{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:60;
+      display:none;
+    }
+
+    /* Toast */
+    .toast{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:18px;
+      background: rgba(15,21,32,.92);
+      border:1px solid rgba(255,255,255,.10);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:999px;
+      box-shadow: var(--shadow);
+      font-size:13px;
+      display:none;
+      z-index:70;
+    }
+
+    .mini{
+      font-size:12px;color:var(--muted);
+      margin-top:8px;
+      line-height:1.45;
+    }
+  </style>
 </head>
 <body>
+  <canvas id="confettiCanvas"></canvas>
+  <div class="toast" id="toast"></div>
 
-<h1>🎉 Cofit 直播抽獎 🎉</h1>
+  <div class="wrap">
+    <!-- Left -->
+    <section class="card">
+      <div class="head">
+        <div class="logo" aria-label="Cofit logo">
+          <!-- 你可以把同資料夾內的 logo 檔名改成 Cofit_logo_直_白.png -->
+          <img src="Cofit_logo_直_白.png" alt="Cofit" />
+        </div>
+        <div>
+          <h1>Cofit 直播抽獎</h1>
+          <div class="sub">貼上 Google Meet 聊天紀錄，系統只會抓「名字」進名單</div>
+        </div>
+      </div>
+      <div class="body">
+        <label for="chat">貼上 Meet 聊天紀錄</label>
+        <textarea id="chat" placeholder=""></textarea>
 
-<textarea id="chatInput" placeholder="請貼上 Google Meet 聊天紀錄"></textarea>
+        <div class="row" style="margin-top:12px;">
+          <div class="field">
+            <label for="prize">抽獎品項（可自行輸入）</label>
+            <input id="prize" type="text" placeholder="例如：感恩晚會禮物 / Cofit 小禮 / 100 co幣" />
+          </div>
+          <div class="field" style="max-width:220px;">
+            <label for="wcount">抽出幾位？</label>
+            <select id="wcount">
+              <option value="1">1 位</option>
+              <option value="2" selected>2 位</option>
+              <option value="3">3 位</option>
+              <option value="4">4 位</option>
+              <option value="5">5 位</option>
+              <option value="6">6 位</option>
+              <option value="7">7 位</option>
+              <option value="8">8 位</option>
+              <option value="9">9 位</option>
+              <option value="10">10 位</option>
+            </select>
+          </div>
+        </div>
 
-<div class="controls">
-    抽獎品項：
-    <input type="text" id="prize" placeholder="請輸入獎品名稱">
+        <div class="btns">
+          <button class="ghost" id="parseBtn">整理名單</button>
+          <button class="primary" id="drawBtn">開始抽獎</button>
+          <button class="danger" id="clearBtn">清空</button>
+        </div>
 
-    抽出人數：
-    <select id="count">
-        <option value="1">1位</option>
-        <option value="2">2位</option>
-        <option value="3">3位</option>
-        <option value="4">4位</option>
-        <option value="5">5位</option>
-    </select>
-</div>
+        <div class="hint">
+          ✔ 支援「名字/時間/留言」交錯、以及「同一人連續留言（只出現一次名字）」<br/>
+          ✔ 只把「名字」納入名單；重複名字會自動去重（以第一次出現為準）
+        </div>
+      </div>
+    </section>
 
-<button onclick="draw()">開始抽獎</button>
+    <!-- Right -->
+    <aside class="card">
+      <div class="head">
+        <div>
+          <h1 style="font-size:18px;">名單預覽</h1>
+          <div class="sub">抽獎前先確認：名單數量與內容</div>
+        </div>
+      </div>
+      <div class="body">
+        <div class="stat">
+          <div class="pill">
+            <div class="k">名單人數</div>
+            <div class="v" id="countV">0</div>
+          </div>
+          <div class="pill">
+            <div class="k">狀態</div>
+            <div class="v" id="statusV">尚未整理</div>
+          </div>
+        </div>
 
-<div class="result" id="result"></div>
+        <div class="list" id="list"></div>
+
+        <div class="mini">
+          小提醒：若你貼上的內容包含「主持人系統訊息」或「空行」，系統會自動忽略；如名單怪怪的，按一次「整理名單」即可。
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Modal -->
+  <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-label="抽獎結果">
+    <div class="modal">
+      <div class="modalHead">
+        <div class="modalTitle">
+          <div id="modalMain">抽獎結果</div>
+          <small id="modalSub">—</small>
+        </div>
+        <div class="x" id="closeBtn" title="關閉">✕</div>
+      </div>
+      <div class="modalBody">
+        <div class="winnerBox">
+          <div class="badge" id="badge">🎉 開獎中</div>
+          <div class="winnerLabel" id="winnerLabel">得獎者</div>
+          <div class="winnerName" id="winnerName"><span class="spin">—</span></div>
+        </div>
+        <div class="hint" style="margin-top:12px;">
+          抽到的人會從名單移除（同一輪不重複）。想再抽一次可直接再按「開始抽獎」。
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sounds (Base64 tiny wav beeps) -->
+  <audio id="tickSound" preload="auto"></audio>
+  <audio id="winSound" preload="auto"></audio>
 
 <script>
-function extractNames(text){
-    const lines = text.split("\n");
-    const names = [];
-    let lastWasTime = false;
+(() => {
+  // ----- Elements
+  const chatEl = document.getElementById('chat');
+  const prizeEl = document.getElementById('prize');
+  const wcountEl = document.getElementById('wcount');
+  const parseBtn = document.getElementById('parseBtn');
+  const drawBtn = document.getElementById('drawBtn');
+  const clearBtn = document.getElementById('clearBtn');
+  const listEl = document.getElementById('list');
+  const countV = document.getElementById('countV');
+  const statusV = document.getElementById('statusV');
 
-    const timePattern = /(上午|下午)?\d{1,2}:\d{2}/;
+  const overlay = document.getElementById('overlay');
+  const closeBtn = document.getElementById('closeBtn');
+  const winnerName = document.getElementById('winnerName');
+  const winnerLabel = document.getElementById('winnerLabel');
+  const badge = document.getElementById('badge');
+  const modalSub = document.getElementById('modalSub');
 
-    lines.forEach(line=>{
-        const clean = line.trim();
-        if(clean==="") return;
+  const toast = document.getElementById('toast');
 
-        if(timePattern.test(clean)){
-            lastWasTime = true;
-            return;
+  const confettiCanvas = document.getElementById('confettiCanvas');
+  const ctx = confettiCanvas.getContext('2d');
+
+  const tickSound = document.getElementById('tickSound');
+  const winSound = document.getElementById('winSound');
+
+  // ----- Small inlined sounds (very small "click" + "win" beep)
+  // Generated tiny wav data URIs to avoid external files
+  tickSound.src = "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAA=";
+  winSound.src  = "data:audio/wav;base64,UklGRkQAAABXQVZFZm10IBAAAAABAAEAQB8AAIA+AAACABAAZGF0YQAAAAAA/////wAAAP///wAAAP///wAAAP8=";
+
+  // ----- State
+  let names = [];
+  let isDrawing = false;
+
+  // ----- Helpers
+  const showToast = (msg) => {
+    toast.textContent = msg;
+    toast.style.display = 'block';
+    clearTimeout(showToast._t);
+    showToast._t = setTimeout(() => toast.style.display = 'none', 2200);
+  };
+
+  const isTimeLine = (s) => {
+    // Accept: 上午5:24 / 下午 5:24 / 晚上7:28 / 7:28 / 19:00 / 07:28
+    const t = s.replace(/\s+/g,'').trim();
+    return /^((上午|下午|晚上)?\d{1,2}:\d{2})$/.test(t);
+  };
+
+  const normalizeLine = (s) => s.replace(/\u200B/g,'').trim();
+
+  function parseMeetChat(text){
+    const rawLines = text.split(/\r?\n/).map(normalizeLine).filter(l => l !== '');
+    const out = [];
+    const seen = new Set();
+
+    let currentName = null;
+
+    for(let i=0; i<rawLines.length; i++){
+      const line = rawLines[i];
+      const next = rawLines[i+1];
+
+      if(isTimeLine(line)){
+        // time line, does not define name
+        continue;
+      }
+
+      // Detect a "name line" when next line is a time line
+      if(next && isTimeLine(next)){
+        currentName = line;
+
+        if(currentName && !seen.has(currentName)){
+          seen.add(currentName);
+          out.push(currentName);
         }
+        continue;
+      }
 
-        if(lastWasTime){
-            lastWasTime = false;
-            return;
-        }
-
-        if(clean.length<=30){
-            names.push(clean);
-        }
-    });
-
-    return [...new Set(names)];
-}
-
-function draw(){
-    const text = document.getElementById("chatInput").value;
-    const prize = document.getElementById("prize").value;
-    const count = parseInt(document.getElementById("count").value);
-    const resultDiv = document.getElementById("result");
-
-    const names = extractNames(text);
-
-    if(names.length===0){
-        alert("沒有偵測到名字！");
-        return;
+      // Otherwise it's a message line (could be consecutive messages),
+      // we ignore message lines because we only want names.
+      // If the log begins with a time line then messages, we can't infer name -> ignore.
+      // If "currentName" exists, we still do nothing (avoid duplicating).
     }
 
-    const shuffled = names.sort(()=>0.5-Math.random());
-    const winners = shuffled.slice(0,count);
+    return out;
+  }
 
-    resultDiv.innerHTML = `✨ 恭喜以下獲得 ${prize || "獎品"} ✨`;
-
-    winners.forEach(name=>{
-        resultDiv.innerHTML += `<div class="winner">${name}</div>`;
-    });
-
-    confetti();
-}
-
-function confetti(){
-    for(let i=0;i<120;i++){
-        const div = document.createElement("div");
-        div.className="confetti";
-        div.style.left=Math.random()*100+"vw";
-        div.style.background=`hsl(${Math.random()*360},70%,60%)`;
-        div.style.animationDuration=2+Math.random()*3+"s";
-        document.body.appendChild(div);
-        setTimeout(()=>div.remove(),4000);
+  function renderList(){
+    listEl.innerHTML = '';
+    if(names.length === 0){
+      listEl.innerHTML = `<div class="hint" style="margin:0;">尚無名單。貼上聊天內容後按「整理名單」。</div>`;
+    }else{
+      const frag = document.createDocumentFragment();
+      names.forEach(n => {
+        const d = document.createElement('span');
+        d.className = 'chip';
+        d.innerHTML = `<i></i>${escapeHtml(n)}`;
+        frag.appendChild(d);
+      });
+      listEl.appendChild(frag);
     }
-}
+    countV.textContent = String(names.length);
+    statusV.textContent = names.length ? '已整理' : '尚未整理';
+  }
+
+  function escapeHtml(str){
+    return String(str)
+      .replaceAll('&','&amp;')
+      .replaceAll('<','&lt;')
+      .replaceAll('>','&gt;')
+      .replaceAll('"','&quot;')
+      .replaceAll("'","&#039;");
+  }
+
+  // ----- Confetti
+  let confetti = [];
+  function resizeCanvas(){
+    confettiCanvas.width = window.innerWidth * devicePixelRatio;
+    confettiCanvas.height = window.innerHeight * devicePixelRatio;
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  function launchConfetti(durationMs=1600){
+    confettiCanvas.style.display = 'block';
+    const W = confettiCanvas.width, H = confettiCanvas.height;
+    const n = 180;
+    confetti = [];
+    for(let i=0;i<n;i++){
+      confetti.push({
+        x: Math.random()*W,
+        y: -Math.random()*H*0.2,
+        vx: (Math.random()*2-1) * devicePixelRatio * 1.8,
+        vy: (Math.random()*2+2) * devicePixelRatio * 2.6,
+        r: (Math.random()*5+3) * devicePixelRatio,
+        a: Math.random()*Math.PI*2,
+        va:(Math.random()*0.25-0.125),
+        life: Math.random()*0.6+0.4
+      });
+    }
+    const start = performance.now();
+    function frame(t){
+      const dt = (t - frame._t) || 16;
+      frame._t = t;
+      ctx.clearRect(0,0,W,H);
+
+      confetti.forEach(p=>{
+        p.vy += 0.003*dt*devicePixelRatio; // gravity
+        p.x += p.vx*dt*0.06;
+        p.y += p.vy*dt*0.06;
+        p.a += p.va*dt*0.06;
+
+        // gentle drift
+        if(p.x < -100) p.x = W+100;
+        if(p.x > W+100) p.x = -100;
+
+        // draw
+        ctx.save();
+        ctx.translate(p.x,p.y);
+        ctx.rotate(p.a);
+        ctx.globalAlpha = Math.max(0, Math.min(1, p.life));
+        ctx.fillStyle = `hsl(${(p.x/W)*360}, 90%, 60%)`;
+        ctx.fillRect(-p.r, -p.r/2, p.r*2, p.r);
+        ctx.restore();
+
+        // fade out
+        const progress = (t - start) / durationMs;
+        p.life = 1 - progress;
+      });
+
+      if(t - start < durationMs){
+        requestAnimationFrame(frame);
+      }else{
+        ctx.clearRect(0,0,W,H);
+        confettiCanvas.style.display = 'none';
+      }
+    }
+    requestAnimationFrame(frame);
+  }
+
+  // ----- Drawing animation
+  function openModal(){
+    overlay.style.display = 'flex';
+  }
+  function closeModal(){
+    overlay.style.display = 'none';
+  }
+  overlay.addEventListener('click', (e)=>{
+    if(e.target === overlay && !isDrawing) closeModal();
+  });
+  closeBtn.addEventListener('click', ()=>{
+    if(!isDrawing) closeModal();
+  });
+
+  async function animatePick(winners){
+    // show one by one inside same modal, so you can see all winners
+    openModal();
+    const prize = prizeEl.value.trim();
+    modalSub.textContent = prize ? `獎項：${prize}` : '—';
+
+    isDrawing = true;
+    badge.textContent = '🎲 抽獎中';
+    badge.style.borderColor = 'rgba(255,255,255,.16)';
+    badge.style.background = 'rgba(255,255,255,.08)';
+
+    for(let i=0;i<winners.length;i++){
+      winnerLabel.textContent = `得獎者 ${i+1} / ${winners.length}`;
+
+      // roll animation: show random names quickly
+      const rollMs = 1200;
+      const start = performance.now();
+      while(performance.now() - start < rollMs){
+        const r = names.length ? names[Math.floor(Math.random()*names.length)] : '—';
+        winnerName.innerHTML = `<span class="spin">${escapeHtml(r)}</span>`;
+        try{ tickSound.currentTime = 0; await tickSound.play(); }catch(_){}
+        await new Promise(r => setTimeout(r, 55));
+      }
+
+      // settle to actual winner
+      winnerName.innerHTML = `<span class="spin">${escapeHtml(winners[i])}</span>`;
+      try{ winSound.currentTime = 0; await winSound.play(); }catch(_){}
+      launchConfetti(1200);
+      badge.textContent = '🎉 恭喜得獎';
+      badge.style.borderColor = 'rgba(45,212,191,.28)';
+      badge.style.background = 'rgba(45,212,191,.12)';
+
+      await new Promise(r => setTimeout(r, 900));
+      // back to drawing state for next winner (if any)
+      if(i < winners.length - 1){
+        badge.textContent = '🎲 下一位…';
+        badge.style.borderColor = 'rgba(255,255,255,.16)';
+        badge.style.background = 'rgba(255,255,255,.08)';
+      }
+    }
+
+    isDrawing = false;
+    badge.textContent = '✅ 抽獎完成';
+    badge.style.borderColor = 'rgba(139,255,176,.24)';
+    badge.style.background = 'rgba(139,255,176,.10)';
+  }
+
+  function pickWinners(count){
+    const pool = names.slice(); // remaining names
+    const winners = [];
+    const c = Math.min(count, pool.length);
+
+    for(let i=0;i<c;i++){
+      const idx = Math.floor(Math.random()*pool.length);
+      winners.push(pool[idx]);
+      pool.splice(idx,1);
+    }
+
+    // remove winners from global names so same round won't repeat
+    const winSet = new Set(winners);
+    names = names.filter(n => !winSet.has(n));
+    return winners;
+  }
+
+  // ----- Events
+  parseBtn.addEventListener('click', ()=>{
+    const parsed = parseMeetChat(chatEl.value || '');
+    names = parsed;
+    renderList();
+    showToast(names.length ? `已整理：${names.length} 位` : '沒有抓到名字：請確認貼上格式');
+  });
+
+  drawBtn.addEventListener('click', async ()=>{
+    if(isDrawing) return;
+
+    // auto-parse if not yet parsed but textarea has content
+    if(names.length === 0){
+      const parsed = parseMeetChat(chatEl.value || '');
+      names = parsed;
+      renderList();
+    }
+
+    const want = parseInt(wcountEl.value,10) || 1;
+    if(names.length === 0){
+      showToast('名單是空的：先貼上聊天紀錄再整理名單');
+      return;
+    }
+    if(want > names.length){
+      showToast(`名單只有 ${names.length} 位，無法抽 ${want} 位（請調整抽獎人數）`);
+      return;
+    }
+
+    const winners = pickWinners(want);
+    renderList();
+    await animatePick(winners);
+  });
+
+  clearBtn.addEventListener('click', ()=>{
+    if(isDrawing) return;
+    chatEl.value = '';
+    prizeEl.value = '';
+    names = [];
+    renderList();
+    showToast('已清空');
+  });
+
+  // initial
+  renderList();
+})();
 </script>
-
 </body>
 </html>
